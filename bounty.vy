@@ -5,7 +5,6 @@ implements: ERC721
 
 owner: address
 _tokenId: uint256
-balance_of: map(address, wei_value)
 
 @public
 def --int--():
@@ -29,7 +28,7 @@ def ownerOf(_tokenId: uint256) -> address:
  
 @public
 def deposit():
-    self.balance_of[msg.sender] += msg.value
+    self.balance_of[address(this)] += msg.value
     log.Deposit(msg.sender, msg.value)
     
 @public
