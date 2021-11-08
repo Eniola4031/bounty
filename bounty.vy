@@ -1,12 +1,14 @@
-#interface ERC721:
-@external
-def safeTransferFrom(
-            _from: address,
-            _to: address,
-            _tokenId: uint256,
-            _data: Bytes[1024]=b""
-    ):
+#from vyper.interfaces import ERC721
 
+#implements: ERC721
+
+# Interface for the contract called by safeTransferFrom()
+interface ERC721:
+    def safeTransferFrom(
+            _to: address,
+            _from: address,
+            _tokenId: uint256,
+        ) -> bytes32: view
 
 tokenAddress: address
 
