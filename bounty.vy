@@ -1,24 +1,43 @@
-#from vyper.interfaces import ERC721
 
-#implements: ERC721
+from vyper.interfaces import ERC721
+owner:address
 
-# Interface for the contract called by safeTransferFrom()
-interface ERC721:
-    def safeTransferFrom(
-            _to: address,
+@external
+def __init__():
+    self.owner=msg.sender
+    
+
+interface ERC721Receiver:
+    def onERC721Received(
+            _operator: address,
             _from: address,
             _tokenId: uint256,
+            _data: Bytes[1024]
         ) -> bytes32: view
 
-tokenAddress: address
-
+implements: ERC721Receiver
+@external
+def deposit(_from: address, _tokenId: uint256,tokenAddress: address):
+    #throws if caller is not the owner
+    assert msg.sender==self.owner
+    ERC721(tokenAddress).safeTransferFrom(_from, self, _tokenId,0x00) 
+    
+@external
+def withdraw(_to: address, _tokenId: uint256,tokenAddress: address):
+     #throws if caller is not the owner
+    assert msg.sender==self.owner
+    ERC721(tokenAddress).safeTransferFrom(self,_to,_tokenId,0x00)
 
 @external
-def deposit(_from: address, _tokenId: uint256):
-    ERC721(self.tokenAddress).safeTransferFrom(_from, self, _tokenId)
-    
+def onERC721Received(_operator: address,
+            _from: address,
+            _tokenId: uint256,
+            _data: Bytes[1024])->bytes32:
+    return method_id("onERC721Received(address,address,uint256,bytes)", output_type=bytes32)  
+
 @external
-def withdraw(_to: address, _tokenId: uint256):
-    ERC721(self.tokenAddress).safeTransferFrom(self,_to,_tokenId)
-    
-    
+def changeOwner(_newOwner:address):
+            #throws if caller is not the owner
+    assert msg.sender==self.owner
+    self.owner=_newOwner
+
